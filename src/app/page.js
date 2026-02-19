@@ -1,5 +1,5 @@
 'use client'
-
+export const dynamic = "force-dynamic"
 import { useState } from 'react'
 import GameBoard from '@/components/game/GameBoard'
 import GameSettings from '@/components/game/GameSettings'
