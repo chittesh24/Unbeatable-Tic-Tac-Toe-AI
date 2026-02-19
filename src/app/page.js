@@ -5,6 +5,7 @@ import GameBoard from '@/components/game/GameBoard'
 import GameSettings from '@/components/game/GameSettings'
 import AIThinkingIndicator from '@/components/game/AIThinkingIndicator'
 import GameModal from '@/components/game/GameModal'
+import WelcomeScreen from '@/components/game/WelcomeScreen'
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard'
 import Header from '@/components/layout/Header'
 import { useGameStore } from '@/store/gameStore'
@@ -14,16 +15,25 @@ import { Brain, Trophy, Settings } from 'lucide-react'
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
-  const { isAIThinking, gameStatus } = useGameStore()
+  const { isAIThinking, gameStatus, startNewGame } = useGameStore()
+
+  const handleStartGame = (playerSymbol) => {
+    startNewGame(playerSymbol)
+  }
 
   return (
     <main className="min-h-screen p-4 md:p-8">
       <Header />
       
       <div className="max-w-7xl mx-auto mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Game Section */}
-          <div className="lg:col-span-2">
+        {/* Show Welcome Screen if game is idle */}
+        {gameStatus === 'idle' ? (
+          <WelcomeScreen onStart={handleStartGame} />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Game Section */}
+              <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -88,20 +98,22 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Full Analytics Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-6 text-center"
-        >
-          <button
-            onClick={() => setShowAnalytics(true)}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all"
-          >
-            View Full Analytics Dashboard
-          </button>
-        </motion.div>
+            {/* Full Analytics Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mt-6 text-center"
+            >
+              <button
+                onClick={() => setShowAnalytics(true)}
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all"
+              >
+                View Full Analytics Dashboard
+              </button>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Modals */}

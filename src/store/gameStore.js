@@ -95,9 +95,16 @@ export const useGameStore = create(
           aiMetadata: initialState.aiMetadata,
         })
         
-        // If AI starts first, make AI move
+        // If AI starts first, make AI move (use requestAnimationFrame for proper timing)
         if (startingPlayer === aiPlayer) {
-          setTimeout(() => get().makeAIMove(), 100)
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              const currentState = get()
+              if (currentState.gameStatus === 'playing' && currentState.board.every(cell => cell === null)) {
+                currentState.makeAIMove()
+              }
+            }, 300)
+          })
         }
       },
 
@@ -293,6 +300,9 @@ export const useGameStore = create(
         
         // Save to learning data
         get().updateLearningData(result)
+        
+        // Save to database
+        get().saveGameToDatabase(result, moveHistory, board)
       },
 
       /**
@@ -371,6 +381,47 @@ export const useGameStore = create(
           currentStreak: analytics.currentStreak,
           longestStreak: analytics.longestStreak,
           averageMoveTime: Math.round(analytics.averageMoveTime),
+        }
+      },
+
+      /**
+       * Save game to database
+       */
+      saveGameToDatabase: async (result, moveHistory, board) => {
+        try {
+          // Get or create user ID from localStorage
+          let userId = localStorage.getItem('tictactoe-user-id')
+          if (!userId) {
+            userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            localStorage.setItem('tictactoe-user-id', userId)
+          }
+
+          const response = await fetch('/api/game/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId,
+              result,
+              totalMoves: moveHistory.length,
+              duration: moveHistory.length > 0 
+                ? moveHistory[moveHistory.length - 1].timestamp - moveHistory[0].timestamp 
+                : 0,
+              aiDepth: get().aiMetadata.searchDepth,
+              boardStates: moveHistory.map(m => ({
+                position: m.position,
+                player: m.player,
+                timestamp: m.timestamp,
+              })),
+            }),
+          })
+
+          if (!response.ok) {
+            console.error('Failed to save game to database')
+          }
+        } catch (error) {
+          console.error('Error saving game:', error)
         }
       },
     }),
