@@ -16,6 +16,9 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
   const { isAIThinking, gameStatus, startNewGame } = useGameStore()
+  const totalGames = useGameStore(state => state.analytics.totalGames)
+  const winRate = useGameStore(state => state.analytics.winRate)
+  const currentStreak = useGameStore(state => state.analytics.currentStreak)
 
   const handleStartGame = (playerSymbol) => {
     startNewGame(playerSymbol)
@@ -67,21 +70,6 @@ export default function Home() {
 
               {/* Quick Stats */}
               <div className="mt-6 grid grid-cols-3 gap-4">
-                <StatCard 
-                  icon={<Brain className="w-5 h-5" />}
-                  label="Games Played"
-                  value={useGameStore(state => state.analytics.totalGames)}
-                />
-                <StatCard 
-                  icon={<Trophy className="w-5 h-5" />}
-                  label="Win Rate"
-                  value={`${useGameStore(state => state.analytics.winRate)}%`}
-                />
-                <StatCard 
-                  icon={<Settings className="w-5 h-5" />}
-                  label="Current Streak"
-                  value={useGameStore(state => state.analytics.currentStreak)}
-                />
               </div>
             </motion.div>
           </div>
