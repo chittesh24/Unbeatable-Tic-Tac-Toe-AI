@@ -28,11 +28,6 @@ export function ThemeProvider({ children }) {
     toggleTheme,
   }
 
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return <div style={{ visibility: 'hidden' }}>{children}</div>
-  }
-
   return (
     <ThemeContext.Provider value={value}>
       {children}
