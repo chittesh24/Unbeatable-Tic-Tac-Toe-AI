@@ -70,6 +70,21 @@ export default function Home() {
 
               {/* Quick Stats */}
               <div className="mt-6 grid grid-cols-3 gap-4">
+                <StatCard 
+                  icon={<Brain className="w-5 h-5" />}
+                  label="Games Played"
+                  value={totalGames}
+                />
+                <StatCard 
+                  icon={<Trophy className="w-5 h-5" />}
+                  label="Win Rate"
+                  value={`${winRate}%`}
+                />
+                <StatCard 
+                  icon={<Settings className="w-5 h-5" />}
+                  label="Current Streak"
+                  value={currentStreak}
+                />
               </div>
             </motion.div>
           </div>
